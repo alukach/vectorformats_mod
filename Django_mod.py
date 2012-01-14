@@ -147,7 +147,7 @@ class Django(Format):
                     feature.properties[p] = reduce(getattr, p.split('__'), res)
 
             # An argument can be passed to access querysets (one to many relationships)
-            # from each value, appending the queryset to the value's 'properties'
+            # from each Feature returned, appending the querysets to the value's 'properties'
             if self.queries:
                 for q in self.queries:
                     itemslist = []
