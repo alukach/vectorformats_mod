@@ -91,8 +91,8 @@ class Django(Format):
         ...     Django.Query(
         ...         queryparameters = 'event_set__all',
         ...         returnfields = ['title', 'description', 'category__category']
-        ...         )
-        ...     ]
+        ...     )
+        ... ]
     """
 
     class QSFilter: #This is used to filter querysets
@@ -119,11 +119,11 @@ class Django(Format):
         ...             Django.QSFilter(
         ...                 parameters='eventdate__date__exact',
         ...                 criteria='2012-01-01'
-        ...                 )
-        ...             ],
+        ...             )
+        ...         ],
         ...         returnfields = ['title', 'description', 'category__category']
-        ...         )
-        ...     ]
+        ...     )
+        ... ]
     """
 
     def decode(self, query_set, generator = False):
