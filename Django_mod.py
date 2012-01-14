@@ -1,5 +1,7 @@
 #####################
 # VectorFormats Hack
+#
+# https://github.com/alukach/VectorFormats-Mod
 #####################
 """ To be used in place of vectorformats.Format.Django """
 
@@ -7,35 +9,6 @@ import pickle
 from vectorformats.Feature import Feature
 from vectorformats.Formats.Format import Format
 from vectorformats.Formats import GeoJSON
-
-class QSFilter: #This is used to filter querysets
-    def __init__(self, parameters, criteria, ftype='filter'):
-        self.ftype = ftype
-        self.parameters = parameters
-        self.criteria = criteria
-
-    def filterset(self, queryset):
-        return getattr(queryset, self.ftype)(**{self.parameters:self.criteria})
-
-class Query:
-    def __init__(self, queryparameters, filters, returnfields):
-        self.queryparameters = queryparameters
-        self.filters = filters
-        self.returnfields = returnfields
-
-    def getset(self, querybase):
-        queryresults = reduce(getattr, self.queryparameters.split('__'), querybase)()
-        if self.filters:
-            for qfilter in self.filters:
-                queryresults = qfilter.filterset(queryresults)
-
-        allresults = []
-        for result in queryresults:
-            returneditem = {}
-            for field in self.returnfields:
-                returneditem[field] = reduce(getattr, field.split('__'), result)
-            allresults.append(returneditem)
-        return allresults
 
 class Django(Format):
     """ This class is designed to decode a Django QuerySet object into
@@ -82,6 +55,23 @@ class Django(Format):
     """
 
     queries = []
+    class Query:
+        def __init__(self, queryparameters, filters, returnfields):
+            self.queryparameters = queryparameters
+            self.filters = filters
+            self.returnfields = returnfields
+        def getset(self, querybase):
+            queryresults = reduce(getattr, self.queryparameters.split('__'), querybase)()
+            if self.filters:
+                for qfilter in self.filters:
+                    queryresults = qfilter.filterset(queryresults)
+            allresults = []
+            for result in queryresults:
+                returneditem = {}
+                for field in self.returnfields:
+                    returneditem[field] = reduce(getattr, field.split('__'), result)
+                allresults.append(returneditem)
+            return allresults
     """
     List of Query() objects that access a queryset from which properties are
     copied to the ouput object.  These querysets allow for following one-to-many
@@ -96,10 +86,33 @@ class Django(Format):
         returnfields: a list of model fields to be returned from each queryset
         value (similar to 'properties' used above)
         ex. djf.queries = [
-                Query(
+                Django.Query(
+                    queryparameters = 'event_set__all',
+                    returnfields = ['title', 'description', 'category__category']
+                    )
+                ]
+    """
+
+    class QSFilter: #This is used to filter querysets
+        def __init__(self, parameters, criteria, ftype='filter'):
+            self.ftype = ftype
+            self.parameters = parameters
+            self.criteria = criteria
+        def filterset(self, queryset):
+            return getattr(queryset, self.ftype)(**{self.parameters:self.criteria})
+    """
+        QSFilter:
+        ftype (Optional): type of filter to be applied.  Defaults to 'filter',
+        options are 'filter' or 'exclude'
+        parameters: the lookup parameters
+        criteria: value used to filter returned data
+        ex. Django.QSFilter(parameters='pub_date__lte', criteria='2006-01-01') is
+        similar to appending .filter(pub_date__lte='2006-01-01') to a QuerySet.
+        ex. djf.queries = [
+                Django.Query(
                     queryparameters = 'event_set__all',
                     filters = [
-                        QSFilter(
+                        Django.QSFilter(
                             parameters='eventdate__date__exact',
                             criteria='2012-01-01'
                             )
@@ -107,14 +120,6 @@ class Django(Format):
                     returnfields = ['title', 'description', 'category__category']
                     )
                 ]
-
-        QSFilter:
-        ftype (Optional): type of filter to be applied.  Defaults to 'filter',
-        options are 'filter' or 'exclude'
-        parameters: the lookup parameters
-        criteria: value used to filter returned data
-        ex. QSFilter(parameters='pub_date__lte', criteria='2006-01-01') is
-        similar to appending .filter(pub_date__lte='2006-01-01') to a QuerySet
     """
 
     def decode(self, query_set, generator = False):
@@ -137,15 +142,19 @@ class Django(Format):
 
             if self.properties:
                 for p in self.properties:
+                # This simple change allows us to span relationships between models:
+                    # feature.properties[p] = getattr(res, p)
                     feature.properties[p] = reduce(getattr, p.split('__'), res)
 
+            # An argument can be passed to access querysets (one to many relationships)
+            # from each value, appending the queryset to the value's 'properties'
             if self.queries:
-                for q in self.queries: # For each queryset retrieved
+                for q in self.queries:
                     itemslist = []
-                    for queryresult in q.getset(res): # and for each result in the queryset
+                    for queryresult in q.getset(res):
                         item = {}
                         for k,v in queryresult.iteritems():
-                            item[k] = v #load the
+                            item[k] = v
                         itemslist.append(item)
                     feature.properties[q.queryparameters] = itemslist
             results.append(feature)
