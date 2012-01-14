@@ -80,17 +80,19 @@ class Django(Format):
     certain criteria, and then iterated through, returning properties from each
     model to be copied to the oupout object. The Query() object is set up as
     follows:
-        queryparameters: the name of the queryset to be retrieved
-        filters (Optional):  a list of QSFilter objects to be used to refine the
-        queryset results.  See below for QSFilter object description
+        * queryparameters: the name of the queryset to be retrieved
+        * filters (Optional):  a list of QSFilter objects to be used to refine the
+        * queryset results.  See below for QSFilter object description
         returnfields: a list of model fields to be returned from each queryset
         value (similar to 'properties' used above)
-        ex. djf.queries = [
-                Django.Query(
-                    queryparameters = 'event_set__all',
-                    returnfields = ['title', 'description', 'category__category']
-                    )
-                ]
+
+        Example:
+        >>> djf.queries = [
+        ...     Django.Query(
+        ...         queryparameters = 'event_set__all',
+        ...         returnfields = ['title', 'description', 'category__category']
+        ...         )
+        ...     ]
     """
 
     class QSFilter: #This is used to filter querysets
@@ -102,24 +104,26 @@ class Django(Format):
             return getattr(queryset, self.ftype)(**{self.parameters:self.criteria})
     """
         QSFilter:
-        ftype (Optional): type of filter to be applied.  Defaults to 'filter',
+        * ftype (Optional): type of filter to be applied.  Defaults to 'filter',
         options are 'filter' or 'exclude'
-        parameters: the lookup parameters
-        criteria: value used to filter returned data
+        * parameters: the lookup parameters
+        * criteria: value used to filter returned data
         ex. Django.QSFilter(parameters='pub_date__lte', criteria='2006-01-01') is
         similar to appending .filter(pub_date__lte='2006-01-01') to a QuerySet.
-        ex. djf.queries = [
-                Django.Query(
-                    queryparameters = 'event_set__all',
-                    filters = [
-                        Django.QSFilter(
-                            parameters='eventdate__date__exact',
-                            criteria='2012-01-01'
-                            )
-                        ],
-                    returnfields = ['title', 'description', 'category__category']
-                    )
-                ]
+
+        Example:
+        >>> djf.queries = [
+        ...     Django.Query(
+        ...         queryparameters = 'event_set__all',
+        ...         filters = [
+        ...             Django.QSFilter(
+        ...                 parameters='eventdate__date__exact',
+        ...                 criteria='2012-01-01'
+        ...                 )
+        ...             ],
+        ...         returnfields = ['title', 'description', 'category__category']
+        ...         )
+        ...     ]
     """
 
     def decode(self, query_set, generator = False):
