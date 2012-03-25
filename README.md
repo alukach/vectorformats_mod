@@ -74,6 +74,6 @@ Additionally, these querysets can be filtered.  For instance, if you were only i
 
 The vectorformats_mod is to be used in conjunction with the standard vectorformats module.
 
-#. Download and install vectorformats: ``pip install vectorformats``
-#. Clone the project into your Django project app: ``git clone git://github.com/alukach/VectorFormats-Mod.git``
-#. Import it in views.py: ``from myProject.myApp.vectorformats_mod.Django import Django``
+1. Download and install vectorformats: ``pip install vectorformats``
+2. Clone the project into your Django project app: ``git clone git://github.com/alukach/VectorFormats-Mod.git``
+3. Import it in views.py: ``from myProject.myApp.vectorformats_mod.Django import Django``
