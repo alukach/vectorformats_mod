@@ -1,8 +1,8 @@
-#####################
+###############################################
 # VectorFormats Hack
 #
 # https://github.com/alukach/VectorFormats-Mod
-#####################
+###############################################
 """ To be used in place of vectorformats.Format.Django """
 
 import pickle
@@ -55,25 +55,8 @@ class Django(Format):
     """
 
     queries = []
-    class Query:
-        def __init__(self, queryparameters, filters, returnfields):
-            self.queryparameters = queryparameters
-            self.filters = filters
-            self.returnfields = returnfields
-        def getset(self, querybase):
-            queryresults = reduce(getattr, self.queryparameters.split('__'), querybase)()
-            if self.filters:
-                for qfilter in self.filters:
-                    queryresults = qfilter.filterset(queryresults)
-            allresults = []
-            for result in queryresults:
-                returneditem = {}
-                for field in self.returnfields:
-                    returneditem[field] = reduce(getattr, field.split('__'), result)
-                allresults.append(returneditem)
-            return allresults
     """
-    List of Query() objects that access a queryset from which properties are
+    List of Query() objects that access a queryset, from which properties are
     copied to the ouput object.  These querysets allow for following one-to-many
     model relationships.  One-to-many model relations return sets of objects
     rather than individual objects.  These sets are optionally filtered to meet
@@ -81,27 +64,20 @@ class Django(Format):
     model to be copied to the oupout object. The Query() object is set up as
     follows:
         * queryparameters: the name of the queryset to be retrieved
+        * properties: List of properties you want copied from the model to the
+        output object. Spanning relationships between models is allowed.
         * filters (Optional):  a list of QSFilter objects to be used to refine the
-        * queryset results.  See below for QSFilter object description
-        returnfields: a list of model fields to be returned from each queryset
-        value (similar to 'properties' used above)
+        queryset results.  See below for QSFilter object description
 
         Example:
         >>> djf.queries = [
         ...     Django.Query(
         ...         queryparameters = 'event_set__all',
-        ...         returnfields = ['title', 'description', 'category__category']
+        ...         properties = ['title', 'description', 'category__category']
         ...     )
         ... ]
     """
 
-    class QSFilter: #This is used to filter querysets
-        def __init__(self, parameters, criteria, ftype='filter'):
-            self.ftype = ftype
-            self.parameters = parameters
-            self.criteria = criteria
-        def filterset(self, queryset):
-            return getattr(queryset, self.ftype)(**{self.parameters:self.criteria})
     """
         QSFilter:
         * ftype (Optional): type of filter to be applied.  Defaults to 'filter',
@@ -121,10 +97,36 @@ class Django(Format):
         ...                 criteria='2012-01-01'
         ...             )
         ...         ],
-        ...         returnfields = ['title', 'description', 'category__category']
+        ...         properties = ['title', 'description', 'category__category']
         ...     )
         ... ]
     """
+
+    class Query:
+        def __init__(self, queryparameters, filters, properties):
+            self.queryparameters = queryparameters
+            self.filters = filters
+            self.properties = properties
+        def getset(self, querybase):
+            queryresults = reduce(getattr, self.queryparameters.split('__'), querybase)()
+            if self.filters:
+                for qfilter in self.filters:
+                    queryresults = qfilter.filterset(queryresults)
+            allresults = []
+            for result in queryresults:
+                returneditem = {}
+                for field in self.properties:
+                    returneditem[field] = reduce(getattr, field.split('__'), result)
+                allresults.append(returneditem)
+            return allresults
+
+    class QSFilter: #This is used to filter querysets
+        def __init__(self, parameters, criteria, ftype='filter'):
+            self.ftype = ftype
+            self.parameters = parameters
+            self.criteria = criteria
+        def filterset(self, queryset):
+            return getattr(queryset, self.ftype)(**{self.parameters:self.criteria})
 
     def decode(self, query_set, generator = False):
         results = []
