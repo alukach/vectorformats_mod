@@ -58,7 +58,7 @@ Additionally, these querysets can be filtered.  For instance, if you were only i
     ...  )
     >>> parksInCity = Django.Query(
     ...     queryset_name = 'park_set__all',
-    ...     properties = ['park', 'address', 'size']m
+    ...     properties = ['park', 'address', 'size']
     ...     filters = [largeParks]
     ... )
     >>> djf = Django.Django(
