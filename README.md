@@ -44,7 +44,7 @@ Take, for example, a situation in which you were querying your database for all 
     ...     queries=[parksInCity]
     ... )
 
-By setting the ``queryset_name`` to ``park_set__all``, we are effectively accessing the ``park_set.all()`` of ever value returned in the ``City.objects`` queryset.  This will append the name and address of each park as a property labeled park_set_all, under each city.
+By setting the ``queryset_name`` to ``park_set__all``, we are effectively accessing the ``park_set.all()`` of each value returned in the ``City.objects`` queryset.  This will append the name and address of each park as a property labeled park_set__all, under each city.
 
 Additionally, these querysets can be filtered.  For instance, if you were only interested in parks with a ``size`` property greater than 30 units, you could create a filter.  A full example could be:
 
