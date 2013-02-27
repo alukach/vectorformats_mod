@@ -69,11 +69,3 @@ Additionally, these querysets can be filtered.  For instance, if you were only i
     >>> geoj = GeoJSON.GeoJSON()
     >>> string = geoj.encode(djf.decode(qs))
     >>> print string
-
-##Usage##
-
-The vectorformats_mod is to be used in conjunction with the standard vectorformats module.
-
-1. Download and install vectorformats: ``pip install vectorformats``
-2. Clone the project into your Django project app: ``git clone git://github.com/alukach/VectorFormats-Mod.git``
-3. Import it in views.py: ``from myProject.myApp.vectorformats_mod.Django import Django``
