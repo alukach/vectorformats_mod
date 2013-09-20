@@ -72,7 +72,7 @@ Additionally, these querysets can be filtered.  For instance, if you were only i
 
 ##Usage##
 
-The vectorformats_mod is to be used in conjunction with the standard vectorformats module.
+The vectorformats_mod is to be used in replacement of the standard vectorformats module.
 
 1. Install the module via Pip: ``pip install -e git+git@github.com:alukach/vectorformats_mod.git#egg=vectorformats``
 2. Import it in views.py: ``from vectorformats.Django import Django``
