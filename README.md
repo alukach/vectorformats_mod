@@ -2,7 +2,7 @@
 
 ##Overview##
 
-A modification of [vectorformat](http://packages.python.org/vectorformats/)'s [Django class](http://packages.python.org/vectorformats/formats/Django.html).  This operates exactly in the same way as the original vectorforats, but with two enhancements:
+A modification of [vectorformat](http://packages.python.org/vectorformats/)'s [Django class](http://packages.python.org/vectorformats/formats/Django.html).  This operates exactly in the same way as the original vectorformats, but with two enhancements:
 
 1. The properties you want copied from the model to the output object can now include properties that span a relationship between models.
 2. A queryset is additionally able to return querysets for each object, allowing access to each object's [one-to-many relationships](https://docs.djangoproject.com/en/1.4/topics/db/examples/many_to_one/).  Optionally, these querysets can be filtered to meet given criteria.
