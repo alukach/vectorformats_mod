@@ -1,10 +1,3 @@
-###############################################
-# VectorFormats Hack
-#
-# https://github.com/alukach/VectorFormats-Mod
-###############################################
-""" To be used in place of vectorformats.Format.Django """
-
 import pickle
 from vectorformats.Feature import Feature
 from vectorformats.Formats.Format import Format
