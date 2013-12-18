@@ -18,6 +18,7 @@ setup(
     license='BSD',
     url='https://github.com/alukach/vectorformats_mod',
     packages=find_packages(exclude=['tests', 'tests.*']),
+    install_requires=['simplejson'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
